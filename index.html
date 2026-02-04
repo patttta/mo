@@ -46,7 +46,6 @@ body {
 .result-text {
   margin-top: 18px;
   font-size: 18px;
-  color: #8D7860;
 }
 
 /* 두근두근 */
@@ -55,7 +54,6 @@ body {
   50% { transform: scale(1.06); }
   100% { transform: scale(1); }
 }
-
 .waiting {
   animation: heartbeat 0.6s infinite;
   opacity: 0.7;
@@ -66,29 +64,23 @@ body {
   0% { opacity: 0; transform: scale(0.85); }
   100% { opacity: 1; transform: scale(1); }
 }
-
 .pop {
   animation: pop 0.35s ease-out;
 }
 
-/* ⭐ 별 아이콘 */
+/* ⭐ 노란 별 팡 */
 .star {
   position: absolute;
   font-size: 22px;
-  color: #FFD84D; /* 무조건 노랑 */
+  color: #FFD84D;
   animation: starFly 1.4s ease-out forwards;
   pointer-events: none;
   z-index: 5;
 }
 
 @keyframes starFly {
-  0% {
-    opacity: 0;
-    transform: translate(0,0) scale(0.4);
-  }
-  30% {
-    opacity: 1;
-  }
+  0% { opacity: 0; transform: translate(0,0) scale(0.4); }
+  30% { opacity: 1; }
   100% {
     opacity: 0;
     transform: translate(var(--x), var(--y)) scale(1.2);
@@ -123,15 +115,28 @@ body {
 <div class="copyright">© Pong PocoPoco Project</div>
 
 <script>
+/* 🔧 테스트 끝나면 false */
+const TEST_MODE = false;
+
+/* 날짜 (자정 기준) */
+function getToday() {
+  const d = new Date();
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2,"0") + "-" +
+    String(d.getDate()).padStart(2,"0");
+}
+
+/* 아이템 */
 const items = [
-  { img: "https://i.imgur.com/6ZgUNGp.png", text: "뚱뚱쿠리 등장!", weight: 40 },
-  { img: "https://i.imgur.com/O8UUh0T.png", text: "열공쿠리 등장!", weight: 40 },
-  { img: "https://i.imgur.com/aqYwzkm.png", text: "바보쿠리 등장!", weight: 40 },
-  { img: "https://i.imgur.com/OBTpOLq.png", text: "✨ 시크릿 갸루쿠리 등장!! ✨", weight: 8, hidden: true }
+  { img:"https://i.imgur.com/6ZgUNGp.png", text:"뚱뚱쿠리 등장!", weight:40 },
+  { img:"https://i.imgur.com/O8UUh0T.png", text:"열공쿠리 등장!", weight:40 },
+  { img:"https://i.imgur.com/aqYwzkm.png", text:"바보쿠리 등장!", weight:40 },
+  { img:"https://i.imgur.com/OBTpOLq.png", text:"✨ 시크릿 갸루쿠리 등장!! ✨", weight:15, hidden:true }
 ];
 
+/* 가중치 랜덤 */
 function weightedRandom(list) {
-  const total = list.reduce((s, i) => s + i.weight, 0);
+  const total = list.reduce((s,i)=>s+i.weight,0);
   let r = Math.random() * total;
   for (const item of list) {
     r -= item.weight;
@@ -139,54 +144,75 @@ function weightedRandom(list) {
   }
 }
 
+/* ⭐ 별 팡 */
 function spawnStars() {
   const box = document.getElementById("imageBox");
-
-  for (let i = 0; i < 14; i++) {
+  for (let i=0;i<14;i++) {
     const star = document.createElement("div");
     star.className = "star";
     star.innerText = "★";
 
     const angle = Math.random() * Math.PI * 2;
-    const radius = 120 + Math.random() * 60;
-
-    const x = Math.cos(angle) * radius + "px";
-    const y = Math.sin(angle) * radius + "px";
-
-    star.style.setProperty("--x", x);
-    star.style.setProperty("--y", y);
+    const radius = 120 + Math.random()*60;
+    star.style.setProperty("--x", Math.cos(angle)*radius+"px");
+    star.style.setProperty("--y", Math.sin(angle)*radius+"px");
 
     box.appendChild(star);
-
-    setTimeout(() => star.remove(), 1400);
+    setTimeout(()=>star.remove(),1400);
   }
 }
 
-function drawBeads() {
+/* 결과 표시 */
+function showResult(result) {
   const box = document.getElementById("resultBox");
   const img = document.getElementById("resultImage");
   const text = document.getElementById("resultText");
-  const drawImg = document.getElementById("drawImage");
 
   box.style.display = "block";
-  img.src = "";
-  text.innerText = "";
+  img.src = result.img;
+  text.innerText = result.text;
+  img.classList.add("pop");
 
+  if (result.hidden) spawnStars();
+}
+
+/* 뽑기 */
+function drawBeads() {
+  const today = getToday();
+
+  if (!TEST_MODE && localStorage.getItem("drawDate") === today) {
+    alert("오늘은 이미 뽑았어요!\n내일 다시 도전해 주세요💛");
+    return;
+  }
+
+  const drawImg = document.getElementById("drawImage");
   drawImg.classList.add("waiting");
 
   setTimeout(() => {
     drawImg.classList.remove("waiting");
 
     const result = weightedRandom(items);
-    img.src = result.img;
-    text.innerText = result.text;
-    img.classList.add("pop");
+    showResult(result);
 
-    if (result.hidden) {
-      spawnStars();
+    if (!TEST_MODE) {
+      localStorage.setItem("drawDate", today);
+      localStorage.setItem("drawResult", JSON.stringify(result));
     }
   }, 1200);
 }
+
+/* 페이지 로드 시: 오늘 결과 있으면 자동 표시 */
+window.onload = function () {
+  if (TEST_MODE) return;
+
+  const today = getToday();
+  const savedDate = localStorage.getItem("drawDate");
+  const savedResult = localStorage.getItem("drawResult");
+
+  if (savedDate === today && savedResult) {
+    showResult(JSON.parse(savedResult));
+  }
+};
 </script>
 
 </body>
