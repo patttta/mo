@@ -5,184 +5,200 @@
 <title>퐁모코 쿠리빵</title>
 
 <style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-  text-align: center;
-  padding: 60px;
-}
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+    text-align: center;
+    padding: 60px;
+  }
 
-.logo-wrap img {
-  max-width: 350px;
-  width: 100%;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
+  .logo-wrap {
+    margin-bottom: 30px;
+  }
 
-.title-image img {
-  max-width: 280px;
-  width: 100%;
-  cursor: pointer;
-}
+  .logo-wrap img {
+    max-width: 350px;
+    width: 100%;
+    cursor: pointer;
+  }
 
-/* 결과 영역 */
-.result {
-  display: none;
-  margin-top: 30px;
-}
+  .title-image {
+    margin-bottom: 30px;
+    cursor: pointer;
+  }
 
-.image-box {
-  position: relative;
-  height: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .title-image img {
+    max-width: 280px;
+    width: 100%;
+  }
 
-.image-box img {
-  max-height: 100%;
-  border-radius: 12px;
-}
+  .result {
+    display: none;
+    margin-top: 30px;
+  }
 
-/* 텍스트 */
-.result-text {
-  margin-top: 16px;
-  font-size: 18px;
-}
+  .image-box {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+  }
 
-/* 두근두근 */
-@keyframes heartbeat {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.07); }
-  100% { transform: scale(1); }
-}
-.waiting {
-  animation: heartbeat 0.6s infinite;
-  opacity: 0.75;
-}
+  .image-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    z-index: 2;
+  }
 
-/* 팝 */
-@keyframes pop {
-  0% { opacity: 0; transform: scale(0.85); }
-  60% { opacity: 1; transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-.pop {
-  animation: pop 0.35s ease-out;
-}
+  .result-text {
+    margin-top: 18px;
+    font-size: 18px;
+    color: #333;
+  }
 
-/* ✨ 히든 샤랄라 */
-.sparkle {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.9), transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.8), transparent 40%),
-    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.7), transparent 45%);
-  animation: sparkleFade 1.2s ease-out forwards;
-  pointer-events: none;
-}
+  .copyright {
+    margin-top: 100px;
+    font-size: 12px;
+    color: #8D7860;
+  }
 
-@keyframes sparkleFade {
-  0% { opacity: 0; transform: scale(0.8); }
-  40% { opacity: 1; }
-  100% { opacity: 0; transform: scale(1.2); }
-}
+  /* 두근두근 */
+  @keyframes heartbeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.05); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
 
-#dateInfo {
-  margin: 20px 0;
-  font-size: 14px;
-  color: #8D7860;
-}
+  .waiting {
+    animation: heartbeat 0.6s ease-in-out infinite;
+    opacity: 0.7;
+  }
+
+  /* 결과 팝 */
+  @keyframes pop {
+    0% { opacity: 0; transform: scale(0.85); }
+    60% { opacity: 1; transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .pop {
+    animation: pop 0.35s ease-out;
+  }
+
+  /* ✨ 히든 샤랄라 효과 (확실히 보임) */
+  .sparkle {
+    position: absolute;
+    inset: -25%;
+    background:
+      radial-gradient(circle, rgba(255,255,255,0.95) 0%, transparent 35%),
+      repeating-conic-gradient(
+        from 0deg,
+        rgba(255,215,255,0.9) 0deg 10deg,
+        transparent 10deg 20deg
+      );
+    animation: sparkleBoom 1.4s ease-out forwards;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  @keyframes sparkleBoom {
+    0% {
+      opacity: 0;
+      transform: scale(0.6) rotate(0deg);
+      filter: blur(8px);
+    }
+    30% {
+      opacity: 1;
+      filter: blur(0);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5) rotate(180deg);
+    }
+  }
 </style>
 </head>
 
 <body>
 
-<div class="logo-wrap">
-  <img src="https://i.imgur.com/rYcxn0Z.png" onclick="location.reload()">
-</div>
+<div class="container">
 
-<div id="dateInfo">
-  <div id="todayText"></div>
-  <div id="countdownText"></div>
-</div>
-
-<div class="title-image" onclick="drawBeads()">
-  <img id="drawImage" src="https://i.imgur.com/e9JGabn.png">
-</div>
-
-<div class="result" id="resultBox">
-  <div class="image-box">
-    <img id="resultImage">
-    <div id="sparkleEffect"></div>
+  <div class="logo-wrap">
+    <img src="https://i.imgur.com/rYcxn0Z.png" onclick="location.reload()">
   </div>
-  <div class="result-text" id="resultText"></div>
+
+  <div class="title-image" onclick="drawBeads()">
+    <img id="drawImage" src="https://i.imgur.com/e9JGabn.png">
+  </div>
+
+  <div class="result" id="resultBox">
+    <div class="image-box">
+      <img id="resultImage">
+      <div id="sparkleEffect"></div>
+    </div>
+    <div class="result-text" id="resultText"></div>
+  </div>
+
+  <div class="copyright">© Pong PocoPoco Project</div>
+
 </div>
 
 <script>
-const TEST_MODE = true; // 테스트 끝나면 false
+  const TEST_MODE = true;
 
-const items = [
-  { img: "https://i.imgur.com/6ZgUNGp.png", text: "뚱뚱쿠리 등장!", weight: 40 },
-  { img: "https://i.imgur.com/O8UUh0T.png", text: "열공쿠리 등장!", weight: 40 },
-  { img: "https://i.imgur.com/aqYwzkm.png", text: "바보쿠리 등장!", weight: 40 },
-  { img: "https://i.imgur.com/OBTpOLq.png", text: "✨ 시크릿 갸루쿠리 ✨", weight: 8 }
-];
+  const items = [
+    { img: "https://i.imgur.com/6ZgUNGp.png", text: "뚱뚱쿠리가 나왔다!", weight: 40 },
+    { img: "https://i.imgur.com/O8UUh0T.png", text: "열공쿠리가 나왔다!", weight: 40 },
+    { img: "https://i.imgur.com/aqYwzkm.png", text: "바보쿠리가 나왔다!", weight: 40 },
+    { img: "https://i.imgur.com/OBTpOLq.png", text: "✨ [시크릿] 갸루쿠리 등장!! ✨", weight: 5 }
+  ];
 
-function weightedRandom(list) {
-  const total = list.reduce((s, i) => s + i.weight, 0);
-  let r = Math.random() * total;
-  for (const item of list) {
-    if ((r -= item.weight) < 0) return item;
-  }
-}
-
-function drawBeads() {
-  const drawImg = document.getElementById("drawImage");
-  const box = document.getElementById("resultBox");
-  const img = document.getElementById("resultImage");
-  const text = document.getElementById("resultText");
-
-  box.style.display = "block";
-  drawImg.classList.add("waiting");
-
-  setTimeout(() => {
-    drawImg.classList.remove("waiting");
-
-    const result = weightedRandom(items);
-    img.src = result.img;
-    text.innerText = result.text;
-
-    img.classList.remove("pop");
-    void img.offsetWidth;
-    img.classList.add("pop");
-
-    if (result === items[3]) {
-      const s = document.getElementById("sparkleEffect");
-      s.className = "sparkle";
-      setTimeout(() => s.className = "", 1200);
+  function weightedRandom(list) {
+    const total = list.reduce((s, i) => s + i.weight, 0);
+    let r = Math.random() * total;
+    for (const item of list) {
+      r -= item.weight;
+      if (r < 0) return item;
     }
-  }, 1200);
-}
+  }
 
-function updateDate() {
-  const now = new Date();
-  document.getElementById("todayText").innerText =
-    `오늘 · ${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일`;
+  function drawBeads() {
+    const box = document.getElementById("resultBox");
+    const img = document.getElementById("resultImage");
+    const text = document.getElementById("resultText");
+    const drawImg = document.getElementById("drawImage");
+    const sparkle = document.getElementById("sparkleEffect");
 
-  const midnight = new Date();
-  midnight.setHours(24,0,0,0);
-  const diff = midnight - now;
-  const h = String(Math.floor(diff/3600000)).padStart(2,"0");
-  const m = String(Math.floor(diff/60000)%60).padStart(2,"0");
-  const s = String(Math.floor(diff/1000)%60).padStart(2,"0");
+    box.style.display = "block";
+    img.src = "";
+    text.innerText = "";
+    sparkle.className = "";
 
-  document.getElementById("countdownText").innerText =
-    `다음까지 · ${h}:${m}:${s}`;
-}
+    drawImg.classList.add("waiting");
 
-updateDate();
-setInterval(updateDate, 1000);
+    setTimeout(() => {
+      drawImg.classList.remove("waiting");
+
+      const result = weightedRandom(items);
+      img.src = result.img;
+      text.innerText = result.text;
+
+      img.classList.remove("pop");
+      void img.offsetWidth;
+      img.classList.add("pop");
+
+      if (result === items[3]) {
+        sparkle.className = "sparkle";
+        setTimeout(() => sparkle.className = "", 1400);
+      }
+    }, 1200);
+  }
 </script>
 
 </body>
